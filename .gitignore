@@ -1,6 +1,8 @@
 *.so
 *.pyc
+data
 output
+pretrained_models
 tensorboard
 lib/build
 lib/pycocotools
