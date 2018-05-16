@@ -21,6 +21,8 @@ case ${DATASET} in
     ITERS=70000
     ANCHORS="[8,16,32]"
     RATIOS="[0.5,1,2]"
+    # ANCHORS="[6,12]"
+    # RATIOS="[4,6]"
     ;;
   pascal_voc_0712)
     TRAIN_IMDB="voc_2007_trainval+voc_2012_trainval"
@@ -48,14 +50,17 @@ echo Logging output to "$LOG"
 
 set +x
 if [[ ! -z  ${EXTRA_ARGS_SLUG}  ]]; then
-  NET_FINAL=output/${NET}/${TRAIN_IMDB}/${EXTRA_ARGS_SLUG}/${NET}_faster_rcnn_iter_${ITERS}.ckpt
+  # NET_FINAL=output/${NET}/${TRAIN_IMDB}/${EXTRA_ARGS_SLUG}/${NET}_faster_rcnn_iter_${ITERS}.ckpt
+  ln -s ${EXTRA_ARGS_SLUG} \
+  output/${NET}/${TRAIN_IMDB}/temp
+  NET_FINAL=output/${NET}/${TRAIN_IMDB}/temp/${NET}_faster_rcnn_iter_${ITERS}.ckpt
 else
   NET_FINAL=output/${NET}/${TRAIN_IMDB}/default/${NET}_faster_rcnn_iter_${ITERS}.ckpt
 fi
 set -x
 
 if [[ ! -z  ${EXTRA_ARGS_SLUG}  ]]; then
-  CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/test_net.py \
+  CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/test_net.py \
     --imdb ${TEST_IMDB} \
     --model ${NET_FINAL} \
     --cfg experiments/cfgs/${NET}.yml \
@@ -63,7 +68,7 @@ if [[ ! -z  ${EXTRA_ARGS_SLUG}  ]]; then
     --net ${NET} \
     --set ANCHOR_SCALES ${ANCHORS} ANCHOR_RATIOS ${RATIOS} ${EXTRA_ARGS}
 else
-  CUDA_VISIBLE_DEVICES=${GPU_ID} time python ./tools/test_net.py \
+  CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/test_net.py \
     --imdb ${TEST_IMDB} \
     --model ${NET_FINAL} \
     --cfg experiments/cfgs/${NET}.yml \
@@ -71,3 +76,4 @@ else
     --set ANCHOR_SCALES ${ANCHORS} ANCHOR_RATIOS ${RATIOS} ${EXTRA_ARGS}
 fi
 
+rm -rf output/${NET}/${TRAIN_IMDB}/temp
