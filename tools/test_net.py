@@ -106,12 +106,17 @@ if __name__ == '__main__':
   net.create_architecture(sess, "TEST", imdb.num_classes, tag='default',
                           anchor_scales=cfg.ANCHOR_SCALES,
                           anchor_ratios=cfg.ANCHOR_RATIOS)
-
+  # print(args.model)
+  # temp = './output/mobile/voc_2007_trainval/ANCHOR_SCALES_[6,12]_ANCHOR_RATIOS_[4,6]/mobile_faster_rcnn_iter_70000.ckpt '
+  # print(('Loading model check point from {:s}').format(temp))
+  # saver = tf.train.Saver()
+  # saver.restore(sess, temp)
   if args.model:
     print(('Loading model check point from {:s}').format(args.model))
     saver = tf.train.Saver()
     saver.restore(sess, args.model)
     print('Loaded.')
+
   else:
     print(('Loading initial weights from {:s}').format(args.weight))
     sess.run(tf.global_variables_initializer())

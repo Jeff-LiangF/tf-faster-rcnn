@@ -9,6 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import time
 from datasets.imdb import imdb
 import datasets.ds_utils as ds_utils
 import xml.etree.ElementTree as ET
@@ -31,12 +32,16 @@ class pascal_voc(imdb):
     self._devkit_path = self._get_default_path() if devkit_path is None \
       else devkit_path
     self._data_path = os.path.join(self._devkit_path, 'VOC' + self._year)
+    # PASCAL VOC 20 Classes
+    # self._classes = ('__background__',  # always index 0
+    #                  'aeroplane', 'bicycle', 'bird', 'boat',
+    #                  'bottle', 'bus', 'car', 'cat', 'chair',
+    #                  'cow', 'diningtable', 'dog', 'horse',
+    #                  'motorbike', 'person', 'pottedplant',
+    #                  'sheep', 'sofa', 'train', 'tvmonitor')
+    # My Own Dataset : one class 'folder'
     self._classes = ('__background__',  # always index 0
-                     'aeroplane', 'bicycle', 'bird', 'boat',
-                     'bottle', 'bus', 'car', 'cat', 'chair',
-                     'cow', 'diningtable', 'dog', 'horse',
-                     'motorbike', 'person', 'pottedplant',
-                     'sheep', 'sofa', 'train', 'tvmonitor')
+                     'folder')
     self._class_to_ind = dict(list(zip(self.classes, list(range(self.num_classes)))))
     self._image_ext = '.jpg'
     self._image_index = self._load_image_set_index()
@@ -185,6 +190,7 @@ class pascal_voc(imdb):
   def _get_comp_id(self):
     comp_id = (self._comp_id + '_' + self._salt if self.config['use_salt']
                else self._comp_id)
+    # comp_id = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
     return comp_id
 
   def _get_voc_results_file_template(self):
@@ -204,6 +210,7 @@ class pascal_voc(imdb):
         continue
       print('Writing {} VOC results file'.format(cls))
       filename = self._get_voc_results_file_template().format(cls)
+      print(filename)
       with open(filename, 'wt') as f:
         for im_ind, index in enumerate(self.image_index):
           dets = all_boxes[cls_ind][im_ind]
@@ -240,7 +247,7 @@ class pascal_voc(imdb):
         continue
       filename = self._get_voc_results_file_template().format(cls)
       rec, prec, ap = voc_eval(
-        filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.5,
+        filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.9,
         use_07_metric=use_07_metric)
       aps += [ap]
       print(('AP for {} = {:.4f}'.format(cls, ap)))
