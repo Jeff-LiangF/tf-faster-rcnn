@@ -1,0 +1,9 @@
+tensorflow-gpu==1.2.0
+opencv-python==3.4.0.12
+easydict==1.6
+numpy
+cython==0.28.0
+matplotlib
+Pillow
+scipy
+pyyaml
