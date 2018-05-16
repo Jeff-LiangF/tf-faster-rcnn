@@ -1,5 +1,6 @@
 *.so
 *.pyc
+venv
 data
 output
 pretrained_models
